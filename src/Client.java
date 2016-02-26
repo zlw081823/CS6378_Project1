@@ -5,20 +5,20 @@ import java.net.Socket;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Client {
-	private static final String [] serverIPAddr = {"127.0.0.1", "10.176.66.80", "10.176.66.81", "10.176.66.80"};
+	private static final String [] serverIPAddr = {"127.0.0.1", "dc24.utdallas.edu", "dc25.utdallas.edu", "dc26.utdallas.edu"};
 	private static final int [] serverPortNum = {6666, 6667, 6668, 6669};
 	
 	public static void main(String[] args) {
 		int clientID = 1234;
 		int serverID = 0;
-		String hostname = serverIPAddr[0];	//Server IP address
-		int portNum = serverPortNum[0];	//Server port number
+		String hostname = serverIPAddr[0];	//Default server IP address - localhost
+		int portNum = serverPortNum[0];	//Default server port number
 		int cursorLoc = 0;
 		
 		while (true) {
 			serverID = serverSelect();
-			hostname = serverIPAddr[serverID - 1];
-			portNum = serverPortNum[serverID - 1];
+			hostname = serverIPAddr[serverID];
+			portNum = serverPortNum[serverID];
 			
 			try {
 				Socket clientSocket = new Socket(hostname, portNum);
@@ -62,6 +62,6 @@ public class Client {
 		//Returns a pseudorandom int value between the specified origin (inclusive) and the specified bound (exclusive).
 		//range from 1 to 3
 //		return ThreadLocalRandom.current().nextInt(1, 4);
-		return 1;	//Just for test
+		return 0;	//Just for test
 	}
 }
