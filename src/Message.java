@@ -22,8 +22,8 @@ public class Message implements Serializable{
 		this.command = null;
 		this.fileName = null;
 		this.data = null;
-		this.clientID = 0000;
-		this.serverID = 0000;
+		this.clientID = 0;
+		this.serverID = 0;
 		this.cursorLoc = 0;
 	}
 	
@@ -32,7 +32,7 @@ public class Message implements Serializable{
 		this.command = null;
 		this.fileName = null;
 		this.data = null;
-		this.clientID = 0000;
+		this.clientID = 0;
 		this.serverID = serverID;
 		this.cursorLoc = 0;
 	}
@@ -67,7 +67,7 @@ public class Message implements Serializable{
 					input = in.split(" ", 3);
 					this.command = input[0];
 					if (!this.command.equalsIgnoreCase("terminate")){
-						//problem - what if enter something else? eg, shutup?
+						//problem - what if enter something else? ex, shutup?
 						this.fileName = input[1];
 						if ((!this.command.equalsIgnoreCase("create") && (!this.command.equalsIgnoreCase("delete"))))
 							this.data = input[2];
@@ -116,6 +116,15 @@ public class Message implements Serializable{
 	
 	public int getClientID () {
 		return this.clientID;
+	}
+	
+//	get/set serverID
+	public void setSeverID (int serverID) {
+		this.serverID = serverID;
+	}
+	
+	public int getServerID () {
+		return this.serverID;
 	}
 	
 //	get/set clientID
