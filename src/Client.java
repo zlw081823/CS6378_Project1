@@ -11,14 +11,17 @@ public class Client {
 	public static void main(String[] args) {
 		int clientID = 1234;
 		int serverID = 0;
-		String hostname = serverIPAddr[0];	//Default server IP address - localhost
-		int portNum = serverPortNum[0];	//Default server port number
+		String hostname = serverIPAddr[0];	//Default Server IP address - Localhost
+		int portNum = serverPortNum[0];	//Default Server port number - 6666
 		int cursorLoc = 0;
 		
 		while (true) {
 			serverID = serverSelect();
 			hostname = serverIPAddr[serverID];
 			portNum = serverPortNum[serverID];
+			System.out.println("Try to connect to Server[" + serverID + "] ...");
+
+			hostname = serverIPAddr[serverID];	//Index does not need to minus one
 			
 			try {
 				Socket clientSocket = new Socket(hostname, portNum);
@@ -61,7 +64,6 @@ public class Client {
 	private static int serverSelect () {
 		//Returns a pseudorandom int value between the specified origin (inclusive) and the specified bound (exclusive).
 		//range from 1 to 3
-//		return ThreadLocalRandom.current().nextInt(1, 4);
-		return 0;	//Just for test
+		return ThreadLocalRandom.current().nextInt(1, 4);
 	}
 }
