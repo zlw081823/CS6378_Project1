@@ -6,23 +6,18 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class Client {
 	private static final String [] serverIPAddr = {"127.0.0.1", "dc24.utdallas.edu", "dc25.utdallas.edu", "dc26.utdallas.edu"};
-	private static final int [] serverPortNum = {6666, 6667, 6668, 6669};
 	
 	public static void main(String[] args) {
 		int clientID = 1234;
 		int serverID = 0;
 		String hostname = serverIPAddr[0];	//Default Server IP address - Localhost
-		int portNum = serverPortNum[0];	//Default Server port number - 6666
+		int portNum = 6666;	//Default Server port number - 6666
 		int cursorLoc = 0;
 		
 		while (true) {
 			serverID = serverSelect();
 			hostname = serverIPAddr[serverID];
-			portNum = serverPortNum[serverID];
 			System.out.println("Try to connect to Server[" + serverID + "] ...");
-
-			hostname = serverIPAddr[serverID];	//Index does not need to minus one
-			
 			try {
 				Socket clientSocket = new Socket(hostname, portNum);
 				ObjectOutputStream out = new ObjectOutputStream(clientSocket.getOutputStream());
