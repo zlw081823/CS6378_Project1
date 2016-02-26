@@ -5,20 +5,22 @@ import java.net.Socket;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Client {
-	private static final String [] serverIPAddr = {"127.0.0.1", "10.176.66.80", "10.176.66.81", "10.176.66.80"};
+	private static final String [] serverIPAddr = {"127.0.0.1", "dc24.utdallas.edu", "dc25.utdallas.edu", "dc26.utdallas.edu"};
 	private static final int [] serverPortNum = {6666, 6667, 6668, 6669};
 	
 	public static void main(String[] args) {
 		int clientID = 1234;
 		int serverID = 0;
-		String hostname = serverIPAddr[0];	//Server IP address
-		int portNum = serverPortNum[0];	//Server port number
+		String hostname = serverIPAddr[0];	//Default Server IP address - Localhost
+		int portNum = serverPortNum[0];	//Default Server port number - 6666
 		int cursorLoc = 0;
 		
 		while (true) {
 			serverID = serverSelect();
-			hostname = serverIPAddr[serverID - 1];
-			portNum = serverPortNum[serverID - 1];
+			System.out.println("Try to connect to Server[" + serverID + "] ...");
+
+			hostname = serverIPAddr[serverID];	//Index does not need to minus one
+			//portNum = serverPortNum[serverID];	//But the ID should be the same!
 			
 			try {
 				Socket clientSocket = new Socket(hostname, portNum);
@@ -61,7 +63,7 @@ public class Client {
 	private static int serverSelect () {
 		//Returns a pseudorandom int value between the specified origin (inclusive) and the specified bound (exclusive).
 		//range from 1 to 3
-//		return ThreadLocalRandom.current().nextInt(1, 4);
-		return 1;	//Just for test
+		return ThreadLocalRandom.current().nextInt(1, 4);
+//		return 1;	//Just for test
 	}
 }
