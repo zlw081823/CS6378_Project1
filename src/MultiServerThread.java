@@ -9,9 +9,10 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
-import javax.swing.text.InternationalFormatter;
-
 public class MultiServerThread extends Thread{
+	private static final String [] serverIPAddr = {"127.0.0.1", "dc24.utdallas.edu", "dc25.utdallas.edu", "dc26.utdallas.edu"};
+	private static final int serverPortNum = 6666;
+	
 	private Socket clientSocket = null;
 	
 	public MultiServerThread(Socket acceptSocket) {
@@ -32,18 +33,8 @@ public class MultiServerThread extends Thread{
 			
 			try {
 				if ((msgIn = (Message) in.readObject()) != null) {
-					if (isMsgFromServer(msgIn)) {
-						//This part needs to be modified!
-						msgOut = cmdHandler(msgIn);	//Send message to Sever
-						out.writeObject(msgOut);							
-					} else {
-						msgOut = cmdHandler(msgIn);	//Send message to Client
-						out.writeObject(msgOut);						
-					}
-
-//					if((msgToClient.getCommand() != null) && msgToClient.getCommand().equalsIgnoreCase("terminate")){
-//						break;
-//					}
+					msgOut = cmdHandler(msgIn);	
+					out.writeObject(msgOut);						
 				}
 			} catch (ClassNotFoundException e) {
 				// TODO Auto-generated catch block
@@ -69,31 +60,64 @@ public class MultiServerThread extends Thread{
 		String cmd = msgIn.getCommand();
 		String fileName = msgIn.getFileName();
 		String data = msgIn.getData();
-		int serverID = msgIn.getServerID();		//ServerID is used to broadcast informations among servers
+		int serverID = msgIn.getServerID();		
 		
 		String dirName = "/tmp/user/java/bin";	//to be replaced
 		String fileDir = dirName + "/" + fileName;
 		int cursorLoc = msgIn.getCursorLoc();	
-		msgOut.setClientID(cursorLoc);	//Output message also need to set cursorLoc whenever respond! 
+		msgOut.setCursorLoc(cursorLoc);	//Output message also need to set cursorLoc whenever respond! 
 		
 		if(cmd.equalsIgnoreCase("create")) {
-			if (createFile(fileDir)) {
-				msgOut.setData("\"" + fileName + "\"" + " was created!");
+			if (msgIn.isServer2Server() == false) {
+				//Server received a message from client
+				if (createFile(fileDir)) {
+					forwardMessage(msgIn);
+					msgOut.setData("\"" + fileName + "\"" + " was created!");
+				} else {
+					msgOut.setData("Create file " + "\"" + fileName + "\"" + "failed!");
+				}
 			} else {
-				msgOut.setData("Create file " + "\"" + fileName + "\"" + "failed!");
-			}
+				//Server received a synchronizing request message from another server
+				if (createFile(fileDir)) {
+					msgOut.setCommand("success");
+				} else {
+					msgOut.setCommand("failure");
+				}				
+			}			
 		} else if(cmd.equalsIgnoreCase("delete")) {
-			if (deleteFile(fileDir)) {
-				msgOut.setData("\"" + fileName + "\"" + " is deleted!");
+			if (msgIn.isServer2Server() == false) {
+				//Server received a message from client
+				if (deleteFile(fileDir)) {
+					forwardMessage(msgIn);
+					msgOut.setData("\"" + fileName + "\"" + " is deleted!");
+				} else {
+					msgOut.setData("failure -- \"" + fileName + "\" does not exist!");
+				}
 			} else {
-				msgOut.setData("failure -- \"" + fileName + "\" does not exist!");
-			}		
+				//Server received a synchronizing request message from another server
+				if (deleteFile(fileDir)) {
+					msgOut.setCommand("success");
+				} else {
+					msgOut.setCommand("failure");
+				}				
+			}			
 		} else if(cmd.equalsIgnoreCase("write")) {
-			if (writeFile(fileDir, data)) {
-				msgOut.setData("A string is written in " + fileName);
+			if (msgIn.isServer2Server() == false) {
+				//Server received a message from client
+				if (writeFile(fileDir, data)) {
+					forwardMessage(msgIn);
+					msgOut.setData("A string is written in " + fileName);
+				} else {
+					msgOut.setData("failure -- \"" + fileName + "\" does not exist!");
+				}
 			} else {
-				msgOut.setData("failure -- \"" + fileName + "\" does not exist!");
-			}		
+				//Server received a synchronizing request message from another server
+				if (writeFile(fileDir, data)) {
+					msgOut.setCommand("success");
+				} else {
+					msgOut.setCommand("failure");
+				}				
+			}					
 		} else if(cmd.equalsIgnoreCase("seek")) {
 			File file = new File(fileDir);
 			
@@ -227,10 +251,46 @@ public class MultiServerThread extends Thread{
 		return null;
 	}
 	
-	private static boolean isMsgFromServer (Message msgIn) {
-		if (msgIn.getServerID() != 0)
-			return true;
-		else 
-			return false;		
+	private static void forwardMessage (Message msgIn) {	//perhaps I can return a <foward succeed/fail> info?
+		int serverID = msgIn.getServerID();
+		int serverAmount = 4;
+		
+		for (int sID = 1; sID < serverAmount; sID ++) {
+			if (sID != serverID) {
+				try {
+					Socket s2sSocket = new Socket(serverIPAddr[sID], serverPortNum);
+					ObjectOutputStream out = new ObjectOutputStream(s2sSocket.getOutputStream());
+					ObjectInputStream in = new ObjectInputStream(s2sSocket.getInputStream());
+					
+					Message msgS2SOut = msgIn;
+					msgS2SOut.setServer2Server(true);
+					msgS2SOut.setClientID(serverID);
+					msgS2SOut.setSeverID(sID);
+					out.writeObject(msgS2SOut);
+					
+					Message msgS2SIn;
+					String reply;
+					//I think in.readObject() will wait until it reads an object
+					while ((msgS2SIn = (Message) in.readObject()) != null) {	
+						if ((reply = msgS2SIn.getCommand()) != null && reply.equals("success")) {
+							System.out.println("server[" + sID + "] synchronized the command!");
+						} else {
+							System.out.println("server[" + sID + "] failed to synchronize the command!");
+						}
+					}
+					in.close();
+					out.close();
+					s2sSocket.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					System.err.println("Cannot connect to server[" + sID + "]");
+				} catch (ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					System.err.println("Cannot read from server[" + sID + "]");
+				}
+			}
+		}
 	}
 }

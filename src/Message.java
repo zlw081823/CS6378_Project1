@@ -16,6 +16,7 @@ public class Message implements Serializable{
 	private int clientID;
 	private int serverID;
 	private int cursorLoc;
+	private boolean server2server;
 	
 	public Message() {
 		// TODO Auto-generated constructor stub
@@ -25,16 +26,7 @@ public class Message implements Serializable{
 		this.clientID = 0;
 		this.serverID = 0;
 		this.cursorLoc = 0;
-	}
-	
-	public Message(int serverID) {
-		// TODO Auto-generated constructor stub
-		this.command = null;
-		this.fileName = null;
-		this.data = null;
-		this.clientID = 0;
-		this.serverID = serverID;
-		this.cursorLoc = 0;
+		this.server2server = false;	//By default, the massage is sent between client to server
 	}
 	
 	public Message(int clientID, int serverID) {
@@ -45,6 +37,7 @@ public class Message implements Serializable{
 		this.clientID = clientID;
 		this.serverID = serverID;
 		this.cursorLoc = 0;
+		this.server2server = false;
 		
 		inputSelection();
 	}
@@ -127,12 +120,21 @@ public class Message implements Serializable{
 		return this.serverID;
 	}
 	
-//	get/set clientID
+//	get/set cursor location
 	public void setCursorLoc (int cursorLoc) {
 		this.cursorLoc = cursorLoc;
 	}
 	
 	public int getCursorLoc () {
 		return this.cursorLoc;
+	}
+	
+//	get/set flag_massage sent from client to server
+	public void setServer2Server (boolean server2server) {
+		this.server2server = server2server;
+	}
+	
+	public boolean isServer2Server () {
+		return this.server2server;
 	}
 }

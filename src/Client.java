@@ -23,7 +23,7 @@ public class Client {
 				ObjectOutputStream out = new ObjectOutputStream(clientSocket.getOutputStream());
 				ObjectInputStream in = new ObjectInputStream(clientSocket.getInputStream());
 				
-				Message msgOut = new Message(clientID, serverID);
+				Message msgOut = new Message(clientID, serverID);	
 				msgOut.setSeverID(serverID);
 				msgOut.setCursorLoc(cursorLoc);
 				out.writeObject(msgOut);
