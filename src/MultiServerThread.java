@@ -271,7 +271,7 @@ public class MultiServerThread extends Thread{
 					Message msgS2SIn;
 					String reply;
 					//I think in.readObject() will wait until it reads an object
-					while ((msgS2SIn = (Message) in.readObject()) != null) {	
+					if ((msgS2SIn = (Message) in.readObject()) != null) {	
 						if ((reply = msgS2SIn.getCommand()) != null && reply.equals("success")) {
 							System.out.println("server[" + sID + "] synchronized the command!");
 						} else {
