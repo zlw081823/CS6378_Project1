@@ -58,6 +58,7 @@ public class Message implements Serializable{
 			try {
 				if ((in = stdIn.readLine()) != null) {
 					input = in.split(" ", 3);
+					System.out.println("*" + input + "*");
 					this.command = input[0];
 					if (!this.command.equalsIgnoreCase("terminate")){
 						//problem - what if enter something else? ex, shutup?
