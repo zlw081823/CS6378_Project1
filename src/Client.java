@@ -60,7 +60,7 @@ public class Client {
 	private static int serverSelect () {
 		//Returns a pseudorandom int value between the specified origin (inclusive) and the specified bound (exclusive).
 		//range from 1 to 3
-//		return ThreadLocalRandom.current().nextInt(1, 4);
-		return 0;	//For test on local host
+		return ThreadLocalRandom.current().nextInt(1, 4);
+//		return 0;	//For test on local host
 	}
 }
