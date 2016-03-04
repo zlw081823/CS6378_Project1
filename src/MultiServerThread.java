@@ -32,7 +32,7 @@ public class MultiServerThread extends Thread{
 			Message msgOut = new Message();	//The serverID will be obtained from msgFromClient
 			
 			try {
-				if ((msgIn = (Message) in.readObject()) != null) {
+				if ((msgIn = (Message) in.readObject()) != null) {	//**Here may come problem, due to the input does not meet the required format!
 					msgOut = cmdHandler(msgIn);	
 					out.writeObject(msgOut);						
 				}
@@ -60,7 +60,7 @@ public class MultiServerThread extends Thread{
 		String cmd = msgIn.getCommand();
 		String fileName = msgIn.getFileName();
 		String data = msgIn.getData();
-		int serverID = msgIn.getServerID();		
+		//int serverID = msgIn.getServerID();		
 		
 		String dirName = "/tmp/user/java/bin";	//to be replaced
 		String fileDir = dirName + "/" + fileName;
@@ -145,7 +145,8 @@ public class MultiServerThread extends Thread{
 			msgOut.setData("The Session is going to be closed!");
 			msgOut.setCommand("terminate");
 		} else {
-			msgOut.setData("Command does not exist!");
+			msgOut.setCommand("again");		//This will bring an error warning to the server site!
+			msgOut.setData("Command does not exist! Try again!");
 		}
 		
 		return msgOut;

@@ -33,12 +33,18 @@ public class Client {
 				if ((msgIn = (Message) in.readObject()) != null) {
 					System.out.println("Output: Server[" + serverID + "]:: " + msgIn.getData());
 					cursorLoc = msgIn.getCursorLoc();
-					if ((cmdFromServer = msgIn.getCommand()) != null && cmdFromServer.equalsIgnoreCase("terminate")){
+					if ((cmdFromServer = msgIn.getCommand()) != null){
 						//make sure the input command is not null!
-						in.close();
-						out.close();
-						clientSocket.close();
-						break;	
+						if (cmdFromServer.equalsIgnoreCase("terminate")) {
+							in.close();
+							out.close();
+							clientSocket.close();
+							break;								
+						} else if (cmdFromServer.equals("again")){
+							System.out.println(msgIn.getData());
+						} else {
+							System.out.println("Should not enter here!");
+						}
 					}
 				}
 				

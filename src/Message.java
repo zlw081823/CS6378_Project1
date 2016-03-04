@@ -57,15 +57,26 @@ public class Message implements Serializable{
 		while (true) {
 			try {
 				if ((in = stdIn.readLine()) != null) {
-					input = in.split(" ", 3);
-					System.out.println("*" + input + "*");
-					this.command = input[0];
-					if (!this.command.equalsIgnoreCase("terminate")){
-						//problem - what if enter something else? ex, shutup?
+					input = in.split(" ", 3);	//If there's less than 3 divided string, then the total length of the string would be less than 2
+					//example: "linwei z" will result in [input.length = 2]
+					//So now I can choose my command based on the length of the string
+					if (input.length == 1) {
+						this.command = input[0];
+					} else if (input.length == 2) {
+						this.command = input[0];
 						this.fileName = input[1];
-						if ((!this.command.equalsIgnoreCase("create") && (!this.command.equalsIgnoreCase("delete"))))
-							this.data = input[2];
+					} else {
+						this.command = input[0];
+						this.fileName = input[1];
+						this.data = input[2];
 					}
+//					this.command = input[0];
+//					if (!this.command.equalsIgnoreCase("terminate")){
+//						//problem - what if enter something else? ex, shutup?
+//						this.fileName = input[1];
+//						if ((!this.command.equalsIgnoreCase("create") && (!this.command.equalsIgnoreCase("delete"))))
+//							this.data = input[2];
+//					}
 
 					break;
 				}
