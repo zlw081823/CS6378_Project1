@@ -139,7 +139,7 @@ public class MultiServerThread extends Thread{
 				String read = readFile(file, data, cursorLoc);
 				msgOut.setData(read);
 			} else {
-				msgOut.setData("Read length is greater than the file length!");
+				msgOut.setData("failure -- \"" + fileName + "\" does not exist!");
 			}
 		} else if (cmd.equalsIgnoreCase("terminate")) {
 			msgOut.setData("The Session is going to be closed!");
@@ -153,6 +153,7 @@ public class MultiServerThread extends Thread{
 	
 	private static boolean createFile (String fileDir) {
 		File file = new File(fileDir);
+		System.out.println(fileDir);
 		
 		//If file does not exist
 		if (file.exists() == false) {
@@ -167,6 +168,7 @@ public class MultiServerThread extends Thread{
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				System.err.println("Cannot create file!");
 			}			
 		}
 		
@@ -245,6 +247,8 @@ public class MultiServerThread extends Thread{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+		} else {
+			return "Reading exceeds the maximum file length [" + fileLength + "]!";
 		}
 		
 		//There is some problem about this final returned value
@@ -271,7 +275,7 @@ public class MultiServerThread extends Thread{
 					Message msgS2SIn;
 					String reply;
 					//I think in.readObject() will wait until it reads an object
-					while ((msgS2SIn = (Message) in.readObject()) != null) {	
+					if ((msgS2SIn = (Message) in.readObject()) != null) {	
 						if ((reply = msgS2SIn.getCommand()) != null && reply.equals("success")) {
 							System.out.println("server[" + sID + "] synchronized the command!");
 						} else {
