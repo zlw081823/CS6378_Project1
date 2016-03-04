@@ -40,8 +40,6 @@ public class Client {
 							out.close();
 							clientSocket.close();
 							break;								
-						} else if (cmdFromServer.equals("again")){
-							System.out.println(msgIn.getData());
 						} else {
 							System.out.println("Should not enter here!");
 						}

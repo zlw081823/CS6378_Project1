@@ -145,7 +145,6 @@ public class MultiServerThread extends Thread{
 			msgOut.setData("The Session is going to be closed!");
 			msgOut.setCommand("terminate");
 		} else {
-			msgOut.setCommand("again");		//This will bring an error warning to the server site!
 			msgOut.setData("Command does not exist! Try again!");
 		}
 		
